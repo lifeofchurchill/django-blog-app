@@ -1,0 +1,38 @@
+{% extends 'blog/base.html' %}
+
+{% block title %} {{post.title}} - My Blog {% endblock %}
+
+{% block content %}
+    <article>
+        <h1>{{ post.title }}</h1>
+
+        <div>
+            By {{ post.author.username }} | 
+            {{ post.created_at |date:"F d, Y" }} |
+            Category: {{ post.category.name }}
+        </div>
+
+        <hr>
+
+        {% if post.featured_image %}
+            <img src="{{ post.featured_image.url }}" alt="{{ post.title }}">
+        {% endif %}
+
+        <div>
+            {{ post.content | linebreaks }} 
+        </div>
+
+        <div>
+            Tags: 
+            {% for tag in post.tags.all %}
+                <span>#{{ tag.name }}</span>
+            {% endfor %}
+        </div>
+        
+        {% if user == user.author %}
+            <a href="#">edit</a>
+            <a href ="#">delete</a>
+        {% endif %}
+    </article>
+{% endblock %}
+
