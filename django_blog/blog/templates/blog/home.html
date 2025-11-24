@@ -3,12 +3,36 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-    <h1>Welcome Home</h1>
+    <h1>Latest Blog Posts</h1>
 
-    {% if user.is_authenticated %}
-        <p>Hello {{ user.username }} </p>
+    {% if posts %}
+        <div class="post-list">
+
+            {% for post in posts %}
+                <article class="post-card">
+                    <h2><a href="#">{{ post.title }}</a></h2>
+                    <div class="post-meta">
+                        <p>By {{ post.author.username }} | {{ post.created_at|date:"F d, Y"}}</p>
+                    </div>
+
+                    <div class="post-excerpt">
+                        {% if post.excerpt %}
+                            <p>{{ post.excerpt }}</p>
+                        {% else %}
+                            <p>{{ post.content|truncatewords:30 }}</p>
+                        {% endif %}
+                    </div>
+                    <a href="{% url 'blog:post' slug=post.slug %}" class="read-more">read more -></a>
+                </article>
+
+            {% endfor %}
+        </div>
+
     {% else %}
-        <p>Please register or Login</p>
+        <div class="no-posts">
+            <p>No posts yet</p>
+            <a href="#" class="read-more">create the first post</a>
+        </div>
     {% endif %}
 
 {% endblock %}
