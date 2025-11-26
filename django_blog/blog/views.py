@@ -1,10 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
+from .models import Post
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 def home(request):
-    return render(request, 'blog/home.html')
+    posts = Post.objects.filter(status = 'published').order_by('created_at') #get all posts which are published and list them by creation date
+    return render(request, 'blog/home.html', {'posts': posts})
 
 
 def register(request):
@@ -32,3 +35,12 @@ def user_login(request):
     else: 
         form = AuthenticationForm() #blank form 
     return render(request, 'blog/login.html', {'form': form}) #renders this if user isnt logged and has errors and
+
+
+def user_logout(request):
+    logout(request) #deletes user session
+    return redirect('blog:home') #redirects home
+
+def post_detail(request, slug): 
+    post = get_object_or_404(Post, slug = slug, status = 'published') #get an object from the database if it does return it if it doesnt show 404 error
+    return render(request, 'blog/post_detail.html', {'post': post})
