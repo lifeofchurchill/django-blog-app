@@ -63,4 +63,34 @@ def post_create(request):
         form = PostForm()
     return render(request, 'blog/post_create.html', {'form': form})
 
+@login_required
+def post_edit(request, slug):
+    post = get_object_or_404(Post, slug=slug)
+
+    if post.author != request.user: #checks if the user trying to edit is the author of the post
+       return redirect('blog:post_detail', slug=post.slug) #if it isnt redirect to view page
+    
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES, instance=post) #instance we are telling the form to update the particular post selected
+        if form.is_valid():
+            form.save()
+            return redirect('post:post_detail', slug=post.slug)
+    else:
+        form = PostForm(instance = post)
+    return render(request, 'blog/post_edit.html', {'form' : form, 'post' : post})
+    
+@login_required
+def post_delete(request, slug):
+    post = get_object_or_404(Post, slug=slug)
+
+    if post.author != request.user: 
+       return redirect('blog:post_detail', slug=post.slug)
+    
+    if request.method == 'POST':
+        post.delete()
+        return redirect('blog:home')
+    return render(request, 'blog/post_delete.html', {'post': post})
+
+
+
 
