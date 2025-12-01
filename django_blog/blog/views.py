@@ -3,6 +3,8 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from .models import Post
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .forms import PostForm
 
 # Create your views here.
 def home(request):
@@ -42,5 +44,23 @@ def user_logout(request):
     return redirect('blog:home') #redirects home
 
 def post_detail(request, slug): 
-    post = get_object_or_404(Post, slug = slug, status = 'published') #get an object from the database if it does return it if it doesnt show 404 error
+    post = get_object_or_404(Post, slug = slug, status = 'published') #get an object from the database if it does return it if it doesnt show 404 error for clean error
     return render(request, 'blog/post_detail.html', {'post': post})
+
+@login_required
+def post_create(request):
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES) #form filled with data of the content and the image files
+        if form.is_valid():
+            post = form.save(commit=False) #create post object but doesnt commit to the DB yet sinc we wanna add extra data 
+            post.author = request.user #set author of post to current user
+            post.save() #now saves to database
+            form.save_m2m() #just in case the form has many to many fields like categories and tags this saves it 
+            return redirect('blog:post_detail', slug = post.slug)
+        else:
+            print("Form errors:", form.errors)
+    else: 
+        form = PostForm()
+    return render(request, 'blog/post_create.html', {'form': form})
+
+
