@@ -22,7 +22,7 @@
                             <p>{{ post.content|truncatewords:30 }}</p>
                         {% endif %}
                     </div>
-                    <a href="{% url 'blog:post' slug=post.slug %}" class="read-more">read more -></a>
+                    <a href="{% url 'blog:post_detail' slug=post.slug %}" class="read-more">Read more -></a>
                 </article>
 
             {% endfor %}

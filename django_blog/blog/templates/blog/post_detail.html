@@ -29,9 +29,9 @@
             {% endfor %}
         </div>
         
-        {% if user == user.author %}
-            <a href="#">edit</a>
-            <a href ="#">delete</a>
+        {% if user == post.author %}
+            <a href="{% url 'blog:post_edit' slug=post.slug %}">edit</a>
+            <a href="{% url 'blog:post_delete' slug=post.slug %}">delete</a>
         {% endif %}
     </article>
 {% endblock %}
