@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Create your models here.
+
 class Category(models.Model):
     name = models.CharField(max_length=200, unique=True)
     slug = models.SlugField(unique=True)
@@ -18,9 +18,10 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
-class Post(models.Model):
-    STATUS_CHOICES = [
-        ('draft', 'Draft'),
+
+class Post(models.Model): #status choices for the blog with repitition of the same ord twice.
+    STATUS_CHOICES = [    #first one is stored in the DB and the second one is the UI.
+        ('draft', 'Draft'), 
         ('published', 'Published'),
     ]
 
@@ -31,7 +32,7 @@ class Post(models.Model):
     featured_image = models.ImageField(upload_to='post_images/', blank=True, null=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag, blank=True)
     status = models.CharField(max_length = 10, choices = STATUS_CHOICES, default = 'draft')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
